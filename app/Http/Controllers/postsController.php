@@ -4,40 +4,61 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\User;
+use App\Models\Post;
+use App\Http\Requests\PostRequest;
+use Illuminate\Support\Str;
+
 class postsController extends Controller
 {
-
-    public function index()
-    {
-
-        $allPosts = [
-            ['id' => 1 , 'title' => 'laravel is cool', 'posted_by' => 'Mostafa Tarek', 'creation_date' => '2022-10-22'],
-            ['id' => 2 , 'title' => 'PHP deep dive', 'posted_by' => 'Ahmed Zakaria', 'creation_date' => '2022-10-15'],
-        ];
+   
+    public function index(){
+    
+        $allPosts = Post::paginate(25);
         return view('posts.index', [
           'posts' => $allPosts
         ]);
     }
-    public function create()
-    {
-        return view('posts.create');
-    }
-
-    public function show($postId)
-    {
-        $arr = [
-            ['id' => 1 , 'title' => 'laravel is cool', 'posted_by' => 'Ahmed', 'creation_date' => '2022-10-22','email'=>'ahmed@gmail.com'],
-            ['id' => 2 , 'title' => 'PHP deep dive', 'posted_by' => 'Mohamed', 'creation_date' => '2022-10-15','email'=>'mohammed@gmail.com'],
-        ];
-        // dd($arr);
-
+    public function show($postId){
+       $post = Post::find($postId);
         return  view('posts.show',[
-            'post' => $arr[$postId-1]
+            'post' => $post
         ]);
     }
-
-    public function store()
-    {
+    public function create(){
+        $allUsers= User::all();
+        // dd($allUsers);
+        return view('posts.create',[
+            'users' => $allUsers
+        ]);
+    }
+    public function store(PostRequest $request){
+        $data = request()->all();
+        // dd($data);
+        Post::create([
+            'title' => $data['title'],
+            'description' =>$data['description'],
+            'user_id' => $data['posted-by'],
+            'slug' => str::slug($data['title'])
+        ]);
        return redirect()->route('posts.index');
+    }
+    public function edit($postId ) {
+        $post = Post::find($postId);
+        return view('posts.edit',[
+            'post' => $post
+        ]);
+    }
+    public function update(PostRequest $request,  $postId) {
+        $data = request()->all();
+        // dd($x->all(),$postId);
+        Post::find($postId)->update(['title'=>$data['title'],'description' =>$data['description'],'slug' => str::slug($data['title'])]);
+        return redirect()->route('posts.index');
+    }
+    public function destroy($postId) {
+     
+        // dd($postId);
+        Post::find($postId)->delete();
+        return redirect()->route('posts.index');
     }
 }

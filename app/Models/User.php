@@ -23,6 +23,10 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function comments()
+    {
+        return $this->morphOne(comment::class, 'commentable');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

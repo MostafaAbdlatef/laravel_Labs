@@ -13,10 +13,14 @@ class button extends Component
      */
     public $type;
     public $action;
-    public function __construct($type,$action)
+    public $dataTarget;
+    public $dataTogle;
+    public function __construct($type,$action,$dataTogle=null,$dataTarget=null)
     {
         $this->type = $type;
         $this->action = $action;
+        $this->dataTarget = $dataTarget;
+        $this->dataTogle = $dataTogle;
         //
     }
 
